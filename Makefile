@@ -20,6 +20,10 @@ ifndef LIBCRYPTO_ROOT
 	export LIBCRYPTO_ROOT = $(shell echo "`pwd`/libcrypto-root")
 endif
 
+ifdef AWSLC_ENGINE
+	export AWSLC_ENGINE
+endif
+
 export S2N_ROOT=$(shell pwd)
 export COVERAGE_DIR = $(shell echo "${S2N_ROOT}/coverage")
 DIRS=$(wildcard */)

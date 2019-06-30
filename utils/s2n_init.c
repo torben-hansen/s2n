@@ -23,6 +23,8 @@
 
 #include "openssl/opensslv.h"
 
+#include <stdlib.h>
+
 static void s2n_cleanup_atexit(void);
 
 unsigned long s2n_get_openssl_version(void)
@@ -34,6 +36,18 @@ int s2n_init(void)
 {
     GUARD(s2n_fips_init());
     GUARD(s2n_mem_init());
+
+#if defined(AWSLC_ENGINE)
+    /* Attempt to load AWS-LC engine. If AWS-LC engine flag is set, we regard a
+     * failure to load the AWS-LC engine an error and abort. This condition
+     * could be relaxed. The function call reads the environment variable
+     * |OPENSSL_CONF| that should point to an OpenSSL config file. This config
+     * file must configure the use of the AWS-LC engine. An example of such a
+     * file can be found in /crypto/awslc_engine.conf.
+     */
+    GUARD(1 > OPENSSL_init_crypto(OPENSSL_INIT_LOAD_CONFIG | OPENSSL_INIT_ENGINE_DYNAMIC, NULL));
+#endif
+
     GUARD(s2n_rand_init());
     GUARD(s2n_cipher_suites_init());
     GUARD(s2n_cipher_preferences_init());
