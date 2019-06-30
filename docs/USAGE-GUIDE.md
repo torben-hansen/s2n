@@ -204,6 +204,43 @@ make
 once built, static and dynamic libraries for s2n will be available in the lib/
 directory.
 
+## AWS-LC engine
+
+s2n can offload cryptographic workloads to AWS-LC through an OpenSSL engine. To
+enable this feature, 3 actions are required:
+
+1. Compile a copy of AWS-LC, the AWS-LC engine and construct an OpenSSL config file configuring the engine.
+2. Compile s2n with the flag `AWSLC_ENGINE` set to 1.
+3. When running s2n, set the environment variable `OPENSSL_CONF` to point to the OpenSSL config file constructed in step 1.
+
+s2n contains an example of the required OpenSSL config file: `/crypto/awslc_engine.conf`.
+
+### Requirements
+
+The AWS-LC engine requires s2n to be build with OpenSSL version >= 1.1.1, compiled with engine support.
+
+### Example build
+
+Using a locally compiled version (>= 1.1.1) of OpenSSL.
+
+Setup:
+
+```
+export OPENSSL_CONF=<path/to/engine/config/file>
+```
+
+Build:
+
+```
+LIBCRYPTO_ROOT=<path/to/openssl/install/directory AWSLC_ENGINE=1 make
+```
+
+Calling `make` also execute unit tests. Integration tests can be executed by:
+
+```
+make integration
+```
+
 ## mlock() and system limits 
 
 Internally s2n uses mlock() to prevent memory from being swapped to disk. The
