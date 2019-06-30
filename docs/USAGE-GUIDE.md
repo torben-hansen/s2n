@@ -207,13 +207,15 @@ directory.
 ## AWS-LC engine
 
 s2n can offload cryptographic workloads to AWS-LC through an OpenSSL engine. To
-enable this feature, 3 actions are required:
+enable this feature, 4 actions are required:
 
-1. Compile a copy of AWS-LC, the AWS-LC engine and construct an OpenSSL config file configuring the engine.
-2. Compile s2n with the flag `AWSLC_ENGINE` set to 1.
-3. When running s2n, set the environment variable `OPENSSL_CONF` to point to the OpenSSL config file constructed in step 1.
+1. Compile a copy of AWS-LC and AWS-LC engine
+2. Construct an OpenSSL config file configuring the engine, that points to the AWS-LC engine.
+3. Compile s2n with the flag `AWSLC_ENGINE` set to 1.
+4. When running s2n, set the environment variable `OPENSSL_CONF` to point to the OpenSSL config file constructed in step 1.
 
 s2n contains an example of the required OpenSSL config file: `/crypto/awslc_engine.conf`.
+Importantly: The file path to the AWS-LC must be set in the field `dynamic_path` before using this config file!
 
 ### Requirements
 
@@ -228,6 +230,8 @@ Setup:
 ```
 export OPENSSL_CONF=<path/to/engine/config/file>
 ```
+
+Set the field `dynamic_path` in the the engine config file `/crypto/awslc_engine.conf` to the path to the AWS-LC engine.
 
 Build:
 
