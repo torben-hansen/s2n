@@ -50,8 +50,8 @@ ifdef S2N_COVERAGE
 endif
 
 # Add flag to enable dynamic load of AWS-LC engine
-ifdef AWSLC_ENGINE
-	DEFAULT_CFLAGS += -DAWSLC_ENGINE
+ifdef ENABLE_UNSAFE_AWSLC_ENGINE
+	DEFAULT_CFLAGS += -DENABLE_UNSAFE_AWSLC_ENGINE
 endif
 
 # Add a flag to disable stack protector for alternative libcs without

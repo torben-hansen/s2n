@@ -51,7 +51,7 @@ int s2n_init(void)
      */
     if (NULL == getenv("USE_UNSAFE_AWSLC_ENGINE")) {
         /* Inconsistency between choice at compile-time and run-time, abort */
-        return 0;
+        return -1;
     }
 
     /* TODO If this function succeeds, the engine might not have been loaded.
