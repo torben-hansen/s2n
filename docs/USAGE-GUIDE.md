@@ -204,22 +204,21 @@ make
 once built, static and dynamic libraries for s2n will be available in the lib/
 directory.
 
-## AWS-LC engine
+## AWS-LC engine **EXPERIMENTAL**
 
-s2n can offload cryptographic workloads to AWS-LC through an OpenSSL engine. To
-enable this feature, 4 actions are required:
+s2n can (transparently) offload cryptographic workloads to AWS-LC through an OpenSSL engine. To enable this feature, 4 actions are required:
 
-1. Compile a copy of AWS-LC and AWS-LC engine
-2. Construct an OpenSSL config file configuring the engine, that points to the AWS-LC engine.
-3. Compile s2n with the flag `AWSLC_ENGINE` set to 1.
-4. When running s2n, set the environment variable `OPENSSL_CONF` to point to the OpenSSL config file constructed in step 1.
+1. Compile a copy of AWS-LC and AWS-LC engine.
+2. Construct an OpenSSL config file (configuring the engine) that points to the AWS-LC engine.
+3. Compile s2n with the flag `ENABLE_UNSAFE_AWSLC_ENGINE` set to 1.
+4. When running s2n, set the environment variable `OPENSSL_CONF` to point to the OpenSSL config file constructed in step 1 and set the environment variable `USE_UNSAFE_AWSLC_ENGINE` to 1.
 
 s2n contains an example of the required OpenSSL config file: `/crypto/awslc_engine.conf`.
-Importantly: The file path to the AWS-LC must be set in the field `dynamic_path` before using this config file!
+Importantly: The file path to the AWS-LC engine must be set in the field `dynamic_path` before using this config file!
 
 ### Requirements
 
-The AWS-LC engine requires s2n to be build with OpenSSL version >= 1.1.1, compiled with engine support.
+The AWS-LC engine requires s2n to be build with OpenSSL version >= 1.1.1 (compiled with engine support).
 
 ### Example build
 
@@ -227,23 +226,29 @@ Using a locally compiled version (>= 1.1.1) of OpenSSL.
 
 Setup:
 
-```
+```shell
 export OPENSSL_CONF=<path/to/engine/config/file>
 ```
 
-Set the field `dynamic_path` in the the engine config file `/crypto/awslc_engine.conf` to the path to the AWS-LC engine.
+Set the field `dynamic_path` in the engine config file `/crypto/awslc_engine.conf` to the path of the AWS-LC engine.
 
 Build:
 
-```
-LIBCRYPTO_ROOT=<path/to/openssl/install/directory AWSLC_ENGINE=1 make
+```shell
+LIBCRYPTO_ROOT=<path/to/openssl/install/directory ENABLE_UNSAFE_AWSLC_ENGINE=1 make
 ```
 
-Calling `make` also execute unit tests. Integration tests can be executed by:
+It can be necessary to point to the AWS-LC dynamic libraries `libawscrypto` and `libdecrepit` at run-time with either `DYLD_LIBRARY_PATH` (OSX) or `LD_LIBRARY_PATH` (Linux, Amazon Linux).
 
-```
-make integration
-```
+### Tests
+
+Calling `make` also execute unit tests. 
+
+**TODO:** Using a run-time environment variable to enable AWS-LC engine at run-time. Need a way to set this for testing.
+
+s2n also contain integration tests. However, they fail because the tests use the system installed OpenSSL, which also tries to read the `OPENSSL_CONF` environment variable.
+
+*NOTE:* Because the AWS-LC engine redirect calls to AWS-LC, there is currently no known method to support `S2N_LIBCRYPTO_SUPPORTS_CUSTOM_RAND`. This variable is therefore set to 0 when compiling with AWS-LC engine support. This, in turn, disable KAT tests for `s2n_hybrid_ecdhe_sike_test.c` because the PRNG cannot be hijacked.
 
 ## mlock() and system limits 
 

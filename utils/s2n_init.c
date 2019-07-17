@@ -37,13 +37,25 @@ int s2n_init(void)
     GUARD(s2n_fips_init());
     GUARD(s2n_mem_init());
 
-#if defined(AWSLC_ENGINE)
+#if defined(ENABLE_UNSAFE_AWSLC_ENGINE)
     /* Attempt to load AWS-LC engine. If AWS-LC engine flag is set, we regard a
      * failure to load the AWS-LC engine an error and abort. This condition
      * could be relaxed. The function call reads the environment variable
      * |OPENSSL_CONF| that should point to an OpenSSL config file. This config
      * file must configure the use of the AWS-LC engine. An example of such a
      * file can be found in /crypto/awslc_engine.conf.
+     *
+     * Firstly, verify at run-time that the engine should actually be loaded.
+     * This requires a consumer to be concious about the choice at both
+     * compile-time and run-time.
+     */
+    if (NULL == getenv("USE_UNSAFE_AWSLC_ENGINE")) {
+        /* Inconsistency between choice at compile-time and run-time, abort */
+        return 0;
+    }
+
+    /* TODO If this function succeeds, the engine might not have been loaded.
+     * This could happen if OpenSSL was unable to find the AWS-LC engine.
      */
     GUARD(1 > OPENSSL_init_crypto(OPENSSL_INIT_LOAD_CONFIG | OPENSSL_INIT_ENGINE_DYNAMIC, NULL));
 #endif

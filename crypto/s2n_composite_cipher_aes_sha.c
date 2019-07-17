@@ -33,7 +33,7 @@ static const EVP_CIPHER *s2n_evp_aes_128_cbc_hmac_sha1(void)
      * See https://www.openssl.org/news/cl101.txt.
      * AWS-LC engine does not support OpenSSL composite ciphers.
      */
-    #if S2N_OPENSSL_VERSION_AT_LEAST(1,0,1) && (!defined LIBRESSL_VERSION_NUMBER) && (!defined AWSLC_ENGINE)
+    #if S2N_OPENSSL_VERSION_AT_LEAST(1,0,1) && (!defined LIBRESSL_VERSION_NUMBER) && (!defined ENABLE_UNSAFE_AWSLC_ENGINE)
         return EVP_aes_128_cbc_hmac_sha1();
     #else
         return NULL;
@@ -42,7 +42,7 @@ static const EVP_CIPHER *s2n_evp_aes_128_cbc_hmac_sha1(void)
 
 static const EVP_CIPHER *s2n_evp_aes_256_cbc_hmac_sha1(void)
 {
-    #if S2N_OPENSSL_VERSION_AT_LEAST(1,0,1) && (!defined LIBRESSL_VERSION_NUMBER) && (!defined AWSLC_ENGINE)
+    #if S2N_OPENSSL_VERSION_AT_LEAST(1,0,1) && (!defined LIBRESSL_VERSION_NUMBER) && (!defined ENABLE_UNSAFE_AWSLC_ENGINE)
         return EVP_aes_256_cbc_hmac_sha1();
     #else
         return NULL;
@@ -55,7 +55,7 @@ static const EVP_CIPHER *s2n_evp_aes_128_cbc_hmac_sha256(void)
      * See https://www.openssl.org/news/cl102.txt. Not supported in any LibreSSL releases.
      * AWS-LC engine does not support OpenSSL composite ciphers.
      */
-    #if S2N_OPENSSL_VERSION_AT_LEAST(1,0,2) && (!defined LIBRESSL_VERSION_NUMBER) && (!defined AWSLC_ENGINE)
+    #if S2N_OPENSSL_VERSION_AT_LEAST(1,0,2) && (!defined LIBRESSL_VERSION_NUMBER) && (!defined ENABLE_UNSAFE_AWSLC_ENGINE)
         return EVP_aes_128_cbc_hmac_sha256();
     #else
         return NULL;
@@ -64,7 +64,7 @@ static const EVP_CIPHER *s2n_evp_aes_128_cbc_hmac_sha256(void)
 
 static const EVP_CIPHER *s2n_evp_aes_256_cbc_hmac_sha256(void)
 {
-    #if S2N_OPENSSL_VERSION_AT_LEAST(1,0,2) && (!defined LIBRESSL_VERSION_NUMBER) && (!defined AWSLC_ENGINE)
+    #if S2N_OPENSSL_VERSION_AT_LEAST(1,0,2) && (!defined LIBRESSL_VERSION_NUMBER) && (!defined ENABLE_UNSAFE_AWSLC_ENGINE)
         return EVP_aes_256_cbc_hmac_sha256();
     #else
         return NULL;
