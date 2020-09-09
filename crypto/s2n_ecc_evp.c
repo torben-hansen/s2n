@@ -17,6 +17,10 @@
 
 #include <openssl/ecdh.h>
 #include <openssl/evp.h>
+#if defined(OPENSSL_IS_AWSLC)
+#include <openssl/mem.h>
+#endif
+
 #include <stdint.h>
 
 #include "tls/s2n_tls_parameters.h"
@@ -222,6 +226,7 @@ int s2n_ecc_evp_compute_shared_secret_as_server(struct s2n_ecc_evp_params *ecc_e
         GUARD_OSSL(EVP_PKEY_CTX_set_ec_paramgen_curve_nid(pctx, ecc_evp_params->negotiated_curve->libcrypto_nid), S2N_ERR_ECDHE_SERIALIZING);
         GUARD_OSSL(EVP_PKEY_paramgen(pctx, &peer_key), S2N_ERR_ECDHE_SERIALIZING);
     }
+
     GUARD_OSSL(EVP_PKEY_set1_tls_encodedpoint(peer_key, client_public_blob.data, client_public_blob.size),
                S2N_ERR_ECDHE_SERIALIZING);
 #else
